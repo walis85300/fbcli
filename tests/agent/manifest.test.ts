@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { buildManifestV1 } from "../../src/agent/manifest.js";
 
 function readJsonFile<T>(relativePathFromThisFile: string): T {

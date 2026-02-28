@@ -1,11 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, mock } from "bun:test";
 import { GraphApiClient } from "../../src/meta/client.js";
 
 describe("GraphApiClient rate limiting", () => {
   it("retries on Meta rate-limit responses with backoff", async () => {
     const sleepCalls: number[] = [];
-    const fetchMock = vi
-      .fn<Parameters<typeof fetch>, ReturnType<typeof fetch>>()
+    const fetchMock = mock<Parameters<typeof fetch>, ReturnType<typeof fetch>>()
       .mockResolvedValueOnce(
         new Response(
           JSON.stringify({
@@ -31,7 +30,7 @@ describe("GraphApiClient rate limiting", () => {
         ),
       );
 
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     const client = new GraphApiClient({
       accessToken: "token",
@@ -59,7 +58,7 @@ describe("GraphApiClient rate limiting", () => {
     let nowMs = 0;
     const sleepCalls: number[] = [];
 
-    const fetchMock = vi.fn<Parameters<typeof fetch>, ReturnType<typeof fetch>>().mockResolvedValue(
+    const fetchMock = mock<Parameters<typeof fetch>, ReturnType<typeof fetch>>().mockResolvedValue(
       new Response(
         JSON.stringify({
           data: [{ ok: true }],
@@ -70,7 +69,7 @@ describe("GraphApiClient rate limiting", () => {
       ),
     );
 
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     const client = new GraphApiClient({
       accessToken: "token",

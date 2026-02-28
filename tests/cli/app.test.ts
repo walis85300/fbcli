@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { runCli } from "../../src/cli/app.js";
 import { type AuthWorkflow } from "../../src/auth-workflow.js";
 import { type MetaApiClient, type QueryParams } from "../../src/meta/client.js";

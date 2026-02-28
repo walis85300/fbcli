@@ -1,7 +1,7 @@
 import { rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, mock } from "bun:test";
 import { createAuthWorkflow } from "../../src/auth-workflow.js";
 import { FbCliError } from "../../src/errors/fbcli-error.js";
 
@@ -10,6 +10,7 @@ const originalEnv = {
   FBCLI_ACCESS_TOKEN: process.env.FBCLI_ACCESS_TOKEN,
   FBCLI_API_VERSION: process.env.FBCLI_API_VERSION,
 };
+const originalFetch = globalThis.fetch;
 
 afterEach(() => {
   if (originalEnv.FBCLI_AUTH_FILE === undefined) {
@@ -30,8 +31,7 @@ afterEach(() => {
     process.env.FBCLI_API_VERSION = originalEnv.FBCLI_API_VERSION;
   }
 
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
+  globalThis.fetch = originalFetch;
 });
 
 describe("auth workflow", () => {
@@ -54,21 +54,18 @@ describe("auth workflow", () => {
       ),
     );
 
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => ({
-        ok: false,
-        status: 400,
-        json: async () => ({
-          error: {
-            message:
-              "Error validating access token: Session has expired on Wednesday, 25-Feb-26 21:00:00 PST.",
-            code: 190,
-            error_subcode: 463,
-          },
-        }),
-      })),
-    );
+    globalThis.fetch = mock(async () => ({
+      ok: false,
+      status: 400,
+      json: async () => ({
+        error: {
+          message:
+            "Error validating access token: Session has expired on Wednesday, 25-Feb-26 21:00:00 PST.",
+          code: 190,
+          error_subcode: 463,
+        },
+      }),
+    })) as unknown as typeof fetch;
 
     const authWorkflow = createAuthWorkflow();
 
