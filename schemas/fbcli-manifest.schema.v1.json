@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fbcli.local/schemas/fbcli-manifest.schema.v1.json",
+  "title": "fbcli Agent Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "cli",
+    "stability",
+    "environment",
+    "errors",
+    "commands",
+    "recipes"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "cli": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "const": "fbcli" },
+        "version": { "type": "string" }
+      }
+    },
+    "stability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "compatibility_policy"],
+      "properties": {
+        "contract": { "type": "string", "const": "stable" },
+        "compatibility_policy": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "optional"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/envVar" }
+        },
+        "optional": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/envVar" }
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/errorDescriptor" },
+      "minItems": 1
+    },
+    "commands": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/commandDescriptor" },
+      "minItems": 1
+    },
+    "recipes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/recipeDescriptor" },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "envVar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "default": { "type": "string" }
+      }
+    },
+    "errorDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "description", "likely_cause", "suggested_fix"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_NODE_TYPE",
+            "INVALID_GRAPH_ID",
+            "AMBIGUOUS_GRAPH_ID",
+            "EDGE_NOT_SUPPORTED",
+            "UNSUPPORTED_IN_MVP",
+            "MISSING_TOKEN",
+            "MISSING_APP_CREDENTIALS",
+            "AUTH_CALLBACK_LISTENER_ERROR",
+            "AUTH_CALLBACK_TIMEOUT",
+            "AUTH_STATE_MISMATCH",
+            "AUTH_TOKEN_EXCHANGE_FAILED",
+            "AUTH_STORAGE_ERROR",
+            "META_API_ERROR"
+          ]
+        },
+        "description": { "type": "string" },
+        "likely_cause": { "type": "string" },
+        "suggested_fix": { "type": "string" }
+      }
+    },
+    "commandDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "summary", "options", "arguments", "output_contract", "examples"],
+      "properties": {
+        "id": { "type": "string" },
+        "path": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "summary": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/commandOption" }
+        },
+        "arguments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/commandArgument" }
+        },
+        "output_contract": { "$ref": "#/$defs/outputContract" },
+        "examples": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/example" },
+          "minItems": 1
+        }
+      }
+    },
+    "commandOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "aliases", "type", "required", "description"],
+      "properties": {
+        "name": { "type": "string" },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "number", "boolean", "csv", "json", "date"]
+        },
+        "required": { "type": "boolean" },
+        "value_hint": { "type": "string" },
+        "default": {
+          "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }]
+        },
+        "enum": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "commandArgument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "description"],
+      "properties": {
+        "name": { "type": "string" },
+        "required": { "type": "boolean" },
+        "description": { "type": "string" }
+      }
+    },
+    "outputContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top_level_keys", "key_notes", "conditional_notes"],
+      "properties": {
+        "top_level_keys": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "key_notes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "conditional_notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "command"],
+      "properties": {
+        "title": { "type": "string" },
+        "command": { "type": "string" }
+      }
+    },
+    "recipeDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "description", "references", "placeholders", "steps"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "placeholders": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/placeholder" }
+        },
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/recipeStep" },
+          "minItems": 1
+        }
+      }
+    },
+    "placeholder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "recipeStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "command", "output"],
+      "properties": {
+        "title": { "type": "string" },
+        "command": { "type": "string" },
+        "output": { "type": "string" }
+      }
+    }
+  }
+}
