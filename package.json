@@ -1,10 +1,13 @@
 {
-  "name": "fbcli",
+  "name": "@walis85300/fbcli",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "bin": {
     "fbcli": "dist/index.js"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   },
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target bun",

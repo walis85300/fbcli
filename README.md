@@ -7,7 +7,7 @@ Read-only Facebook Marketing API CLI designed for humans and agents.
 ## Project status
 
 - Scope: read-only workflows only (no create/update/delete mutations in CLI commands).
-- Maturity: early-stage but tested (`npm run ci:check`).
+- Maturity: early-stage but tested (`bun run ci:check`).
 - Target user: developers/agents who need predictable JSON contracts for Ads data extraction.
 
 ## Features
@@ -22,28 +22,44 @@ Read-only Facebook Marketing API CLI designed for humans and agents.
 
 ### Prerequisites
 
-- Node.js 22+
-- npm
+- [Bun](https://bun.sh) 1.x
 - Facebook app credentials with the right Marketing API scopes
 
-### Install and run locally
+### Install via Homebrew
+
+```bash
+brew tap OWNER/tap
+brew install fbcli
+```
+
+Replace `OWNER` with the GitHub username hosting the tap (see [Homebrew distribution](#homebrew-distribution)).
+
+### Install via npm / bun (from GitHub Packages)
+
+```bash
+bun add -g @OWNER/fbcli
+# or
+npm install -g @OWNER/fbcli --registry=https://npm.pkg.github.com
+```
+
+### Clone and run locally
 
 ```bash
 git clone https://github.com/r-po/fbcli.git
 cd fbcli
-npm install
+bun install
 
-# run in dev mode
-npm run dev -- help --json
-npm run dev -- nodes list
+# run in dev mode (no compilation needed)
+bun run dev -- help --json
+bun run dev -- nodes list
 ```
 
 ### Build and test
 
 ```bash
-npm run build
-npm run test
-npm run ci:check
+bun run build
+bun test
+bun run ci:check
 ```
 
 ## Authentication
@@ -119,7 +135,7 @@ Schema artifacts:
 Generate the manifest:
 
 ```bash
-npm run manifest
+bun run manifest
 ```
 
 ## Reports and pagination behavior
@@ -140,11 +156,11 @@ Deep-dive report slimming flags:
 - `--sort-by spend|ctr|cpc`
 - `--sort-order asc|desc` (default `desc`)
 
-If piping to `jq`, use npm silent mode:
+If piping to `jq`, suppress the script header:
 
 ```bash
-npm run --silent dev -- report creative-deep-dive --account act_<AD_ACCOUNT_ID> --date-preset last_30d --summary-only --top 10 --min-impressions 1000 --sort-by ctr --sort-order desc | jq '{meta,data,highlights,kpis:{totals:.kpis.totals}}'
-npm run --silent dev -- report creative-deep-dive --account act_<AD_ACCOUNT_ID> --date-preset last_30d --totals-only
+bun --silent run dev -- report creative-deep-dive --account act_<AD_ACCOUNT_ID> --date-preset last_30d --summary-only --top 10 --min-impressions 1000 --sort-by ctr --sort-order desc | jq '{meta,data,highlights,kpis:{totals:.kpis.totals}}'
+bun --silent run dev -- report creative-deep-dive --account act_<AD_ACCOUNT_ID> --date-preset last_30d --totals-only
 ```
 
 ## Environment variables
@@ -200,6 +216,27 @@ Token usage:
 - Rotate/revoke tokens if they appear in logs or shell history.
 - Prefer `.env` loading in local shells instead of hardcoding secrets.
 
+## Homebrew distribution
+
+`fbcli` ships as a self-contained compiled binary (no runtime dependency) for
+macOS and Linux via GitHub Releases. To publish a new release:
+
+1. Tag a commit: `git tag v0.1.0 && git push origin v0.1.0`
+2. The [release workflow](.github/workflows/release.yml) runs automatically,
+   compiles binaries for all four platforms, and creates a GitHub Release.
+3. Copy the SHA256 values printed in the workflow log into
+   `HomebrewFormula/fbcli.rb`, then commit the formula to your
+   `homebrew-tap` repository.
+
+Users then install with:
+
+```bash
+brew tap OWNER/tap   # one-time
+brew install fbcli
+```
+
+The Homebrew formula template lives in [`HomebrewFormula/fbcli.rb`](HomebrewFormula/fbcli.rb).
+
 ## Contributing
 
 Contributions are welcome. Please open an issue first for large changes.
@@ -207,7 +244,7 @@ Contributions are welcome. Please open an issue first for large changes.
 Typical workflow:
 
 1. Fork the repo and create a branch.
-2. Run `npm run ci:check` before opening a PR.
+2. Run `bun run ci:check` before opening a PR.
 3. Include tests for behavior changes.
 4. Keep CLI output contracts backward-compatible when possible.
 
