@@ -7,19 +7,18 @@
     "fbcli": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsx src/index.ts",
-    "manifest": "tsx src/index.ts help --json",
-    "test": "vitest run",
-    "ci:check": "npm run build && npm run test"
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit",
+    "dev": "bun src/index.ts",
+    "manifest": "bun src/index.ts help --json",
+    "test": "bun test",
+    "ci:check": "bun run typecheck && bun run build && bun test"
   },
   "dependencies": {
     "commander": "^14.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "@types/bun": "latest",
+    "typescript": "^5.9.2"
   }
 }

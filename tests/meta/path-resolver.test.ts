@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { FbCliError } from "../../src/errors/fbcli-error.js";
 import { resolveGraphPath } from "../../src/meta/path-resolver.js";
 
