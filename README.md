@@ -219,11 +219,13 @@ Token usage:
 ## Homebrew distribution
 
 `fbcli` ships as a self-contained compiled binary (no runtime dependency) for
-macOS and Linux via GitHub Releases. To publish a new release:
+macOS and Linux via GitHub Releases. A release is created automatically on
+every merge to `main`:
 
-1. Tag a commit: `git tag v0.1.0 && git push origin v0.1.0`
+1. Merge a PR to `main`.
 2. The [release workflow](.github/workflows/release.yml) runs automatically,
-   compiles binaries for all four platforms, and creates a GitHub Release.
+   increments the patch version (e.g. `v0.1.3` → `v0.1.4`), compiles
+   binaries for all four platforms, and creates a GitHub Release.
 3. Copy the SHA256 values printed in the workflow log into
    `HomebrewFormula/fbcli.rb`, then commit the formula to your
    `homebrew-tap` repository.
